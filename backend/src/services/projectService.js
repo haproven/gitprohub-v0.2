@@ -28,11 +28,20 @@ async function getProject(
     repo
 ) {
 
-    const repository =
-        await getRepository(
-            username,
-            repo
-        );
+    let repository;
+
+    try {
+        repository =
+            await getRepository(
+                username,
+                repo
+            );
+    } catch (error) {
+        if (error?.status === 404) {
+            return null;
+        }
+        throw error;
+    }
 
 
     // -----------------------------------------------------
@@ -79,10 +88,24 @@ async function getProject(
     // User
     // -----------------------------------------------------
 
-    const user =
-        await getUser(
-            username
-        );
+    let user;
+
+    try {
+        user =
+            await getUser(
+                username
+            );
+    } catch {
+        user = {
+            name: username,
+            login: username,
+            avatar_url: `https://avatars.githubusercontent.com/${encodeURIComponent(username)}`,
+            html_url: `https://github.com/${encodeURIComponent(username)}`,
+            bio: "",
+            followers: 0,
+            public_repos: 0
+        };
+    }
 
 
     // -----------------------------------------------------
@@ -213,25 +236,25 @@ async function getProject(
         developer: {
 
             name:
-                user.name,
+                user?.name || user?.login || username,
 
             username:
-                user.login,
+                user?.login || username,
 
             avatar:
-                user.avatar_url,
+                user?.avatar_url || "",
 
             github:
-                user.html_url,
+                user?.html_url || `https://github.com/${username}`,
 
             bio:
-                user.bio,
+                user?.bio || "",
 
             followers:
-                user.followers,
+                user?.followers ?? 0,
 
             public_repos:
-                user.public_repos
+                user?.public_repos ?? 0
         }
 
     };

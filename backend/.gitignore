@@ -1,4 +1,4 @@
-
-
+node_modules/
 .env
 api.json
+GITPROHUB_QA_AUDIT_REPORT.md

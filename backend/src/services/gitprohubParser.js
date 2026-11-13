@@ -31,9 +31,13 @@ function parseGitProHub(content) {
             status: "",
             developer: "",
             live: "",
+            demo: "",
+            documentation: "",
             github: "",
             image: "",
-            tags: []
+            tags: [],
+            featured: false,
+            open_source: false
         };
     }
 
@@ -45,9 +49,13 @@ function parseGitProHub(content) {
         status: "",
         developer: "",
         live: "",
+        demo: "",
+        documentation: "",
         github: "",
         image: "",
-        tags: []
+        tags: [],
+        featured: false,
+        open_source: false
     };
 
 
@@ -234,8 +242,21 @@ function parseGitProHub(content) {
         findField([
             "live",
             "live_url",
-            "website",
+            "website"
+        ]);
+
+
+    metadata.demo =
+        findField([
             "demo"
+        ]);
+
+
+    metadata.documentation =
+        findField([
+            "documentation",
+            "docs",
+            "documentation_url"
         ]);
 
 
@@ -289,6 +310,20 @@ function parseGitProHub(content) {
                 .filter(Boolean);
 
     }
+
+
+    metadata.featured =
+        findField([
+            "featured"
+        ]).toLowerCase() === "true";
+
+
+    metadata.open_source =
+        findField([
+            "open_source",
+            "open-source",
+            "opensource"
+        ]).toLowerCase() === "true";
 
 
     // =====================================================

@@ -921,8 +921,11 @@
 
     <script>
         const API_BASE =
+            window.location.protocol === "file:" ||
             window.location.port === "5500" ||
-                window.location.port === "5501"
+            window.location.port === "5501" ||
+            window.location.port === "8080" ||
+            window.location.port === "3001"
                 ? "http://localhost:3000"
                 : "";
 
@@ -970,7 +973,12 @@
                     value !== null &&
                     value !== ""
                 ) {
-                    return value;
+                    if (typeof value === "string") {
+                        return value;
+                    }
+                    if (typeof value === "number" || typeof value === "boolean") {
+                        return String(value);
+                    }
                 }
             }
 
@@ -1058,13 +1066,15 @@
                 getValue(
                     project,
                     [
-                        "github",
+                        "github.url",
+                        "github.html_url",
                         "githubUrl",
                         "repository.html_url",
                         "repoUrl",
                         "repositoryUrl",
                         "github_url",
-                        "url"
+                        "url",
+                        "github"
                     ],
                     ""
                 );
@@ -1398,4 +1408,4 @@
 
 </body>
 
-</html>=
+</html>

@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 
-const DATA_DIR = path.join(
-    process.cwd(),
-    "data"
-);
+const DATA_DIR =
+    process.env.DATA_DIR ||
+    path.resolve(__dirname, "../../data");
 
 const INDEX_FILE = path.join(
     DATA_DIR,
@@ -147,25 +146,34 @@ function writeProjects(
 }
 
 function getProjectKey(
-    project
+    projectOrUsername,
+    repoName
 ) {
 
-    if (!project) {
+    if (!projectOrUsername) {
         return null;
     }
 
-    const username =
-        project?.developer?.username ||
-        project?.github?.owner?.login ||
-        project?.owner?.login ||
-        project?.username ||
-        "";
+    let username = "";
+    let repo = "";
 
-    const repo =
-        project?.github?.name ||
-        project?.repo ||
-        project?.repository?.name ||
-        "";
+    if (typeof projectOrUsername === "string") {
+        username = projectOrUsername;
+        repo = repoName || "";
+    } else if (typeof projectOrUsername === "object") {
+        username =
+            projectOrUsername?.developer?.username ||
+            projectOrUsername?.github?.owner?.login ||
+            projectOrUsername?.owner?.login ||
+            projectOrUsername?.username ||
+            "";
+
+        repo =
+            projectOrUsername?.github?.name ||
+            projectOrUsername?.repo ||
+            projectOrUsername?.repository?.name ||
+            "";
+    }
 
     const cleanUsername =
         String(username).trim();

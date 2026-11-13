@@ -149,7 +149,9 @@ async function githubRequest(
             url,
             {
                 headers:
-                    getHeaders()
+                    getHeaders(),
+                signal:
+                    AbortSignal.timeout(10000)
             }
         );
 
@@ -1540,7 +1542,8 @@ module.exports = {
     crawlGitHubGitProHubFiles,
 
     // IMPORTANT
-    isValidUsername
+    isValidUsername,
+    isValidRepositoryPath
 };
 
 

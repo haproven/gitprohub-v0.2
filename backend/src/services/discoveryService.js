@@ -20,7 +20,7 @@ const {
     getProjectKey
 } = require("./projectIndexService");
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = process.env.DATA_DIR || path.resolve(__dirname, "../../data");
 
 const KNOWN_ACCOUNTS_FILE = path.join(
     DATA_DIR,

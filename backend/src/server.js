@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
 
 const {
     getProjects,
@@ -15,7 +17,9 @@ const {
 } = require("./services/projectService");
 
 const {
-    getUserRepositories
+    getUserRepositories,
+    isValidUsername,
+    isValidRepositoryPath
 } = require("./services/githubService");
 
 const {
@@ -46,6 +50,14 @@ app.use(cors());
 app.use(
     express.json()
 );
+
+const PUBLIC_DIR = path.resolve(__dirname, "../../public");
+
+if (fs.existsSync(PUBLIC_DIR)) {
+    app.use(
+        express.static(PUBLIC_DIR, { index: false })
+    );
+}
 
 app.use(
     (req, res, next) => {
@@ -242,6 +254,17 @@ app.get(
             repo
         } = req.params;
 
+        if (!isValidRepositoryPath(username, repo)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "A valid GitHub username and repository name are required"
+            });
+        }
+
         try {
 
             const indexed =
@@ -304,12 +327,15 @@ app.get(
                 error.message
             );
 
-            res.status(500).json({
+            const status = error.status === 404 ? 404 : 500;
+
+            res.status(status).json({
 
                 success: false,
 
-                error:
-                    error.message
+                error: error.status === 404
+                    ? "GitProHub project not found"
+                    : error.message
             });
         }
     }
@@ -323,14 +349,14 @@ app.get(
             username
         } = req.params;
 
-        if (!username) {
+        if (!isValidUsername(username)) {
 
             return res.status(400).json({
 
                 success: false,
 
                 message:
-                    "GitHub username is required"
+                    "A valid GitHub username is required"
             });
         }
 
@@ -494,14 +520,17 @@ app.get(
                 error.message
             );
 
-            res.status(500).json({
+            const status = error.status === 404 ? 404 : 500;
+
+            res.status(status).json({
 
                 success: false,
 
                 username,
 
-                error:
-                    error.message
+                error: error.status === 404
+                    ? "GitHub user not found"
+                    : error.message
             });
         }
     }
